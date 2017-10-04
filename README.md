@@ -1,26 +1,15 @@
-This is a starter template for [Ionic](http://ionicframework.com/docs/) projects.
+# slackplayer
+Don't Slack and drive!  Listen to audible Slack conversations in realtime while you're on the go.
 
-## How to use this template
 
-*This template does not work on its own*. The shared files for each starter are found in the [ionic2-app-base repo](https://github.com/ionic-team/ionic2-app-base).
+#Get Started
 
-To use this template, either create a new ionic project using the ionic node.js utility, or copy the files from this repository into the [Starter App Base](https://github.com/ionic-team/ionic2-app-base).
+#Prerequisites: You need to install the Ionic CLI and make sure you are up-to-date on your version of node.  then just clone this repository.
 
-### With the Ionic CLI:
+1) Open auth0-varibles.ts and add your Auth0 clientID, domain, callbackURL and apiUrl 
 
-Take the name after `ionic2-starter-`, and that is the name of the template to be used when using the `ionic start` command below:
+2) Open home.ts and add your Slack API token
 
-```bash
-$ sudo npm install -g ionic cordova
-$ ionic start myTabs tabs
-```
+Next you need to run ionic serve and authorize the app by loging into Slack.
 
-Then, to run it, cd into `myTabs` and run:
-
-```bash
-$ ionic cordova platform add ios
-$ ionic cordova run ios
-```
-
-Substitute ios for android if not on a Mac.
-
+Now you are ready to start adding features in the app.
