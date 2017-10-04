@@ -11,10 +11,9 @@ npm install -g ionic@latest
 
 2) Fork this repo (use button at the top right)
 
-3) Clone from *your* Github repo
-```
-git clone https://github.com/_YOUR_GITHUB_USERNAME_/slackplayer.git
-```
+3) Clone from **your** Github repo
+
+> `git clone https://github.com/`**`YOUR_GITHUB_USERNAME`**`/slackplayer.git`
 
 4) Navigate into the project directory
 ```
