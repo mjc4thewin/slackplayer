@@ -48,7 +48,11 @@ export class HomePage {
   public composeMessage(msg) {
     let user = msg.user_info.user.real_name;
     let channel = msg.channel_info.channel.name;
-    let messageText = this.parseMessageText(msg.event.text);
+    
+    //TODO:  Need to add message parsing
+    //let messageText = this.parseMessageText(msg.event.text);
+    
+    let messageText = msg.event.text;
     return user + " wrote in the " + channel + " channel: " + messageText;
   }
 
@@ -65,12 +69,16 @@ export class HomePage {
       if (msgArray[i] === ">") {
         userEndIndex = i - 1;
         var userId = msgArray.slice(userStartIndex, userEndIndex).join("");
-        
-        console.log(userId);
-        userArray.push();
+        userArray.push(userId);
       }
     } 
-    return msgText;
+
+    console.log(userArray);
+
+    //TODO: need to get the user.real_name from the Slack API for each of the users mentioned 
+    //in the message and do a search and replace on the @mention with the userId
+
+    return '';
   }
 
   public playLatest(): void {
@@ -83,7 +91,7 @@ export class HomePage {
     this.http.get(`${this.API_URL}`)
       .map(res => res.json())
       .subscribe(
-        data => this.messages = data,
+        data => this.messages = data.reverse(),
         error => this.currentMessage = error
       );
     }
