@@ -2,13 +2,13 @@
   <ion-navbar color=primary>
     <ion-title>Slack Player</ion-title>
     <ion-buttons end>
-      <button ion-button 
+      <button ion-button
       *ngIf="!auth.isAuthenticated()"
       (click)="auth.login()">
         Log In
       </button>
 
-      <button ion-button 
+      <button ion-button
         *ngIf="auth.isAuthenticated()"
         (click)="auth.logout()">
           Log Out
@@ -34,19 +34,19 @@
 
 <ion-content padding *ngIf="auth.isAuthenticated()">
   <div [ngSwitch]="switcher">
-    <div *ngSwitchCase="'player'">    
-        <!-- <ion-list>
-          <ion-item>
-            <ion-label>Voice Option</ion-label>
-            <ion-select [(ngModel)]="selectedVoice">
-              <ion-option *ngFor="let voice of voices" value="voice.name" [selected]="voice.name == selectedVoice">{{voice.name}}</ion-option>
-            </ion-select>
-          </ion-item>
-        </ion-list> -->
-      <button ion-button color=special ngClass="playbtn" (click)=playLatest()><ion-icon name="play"></ion-icon></button>        
+    <div *ngSwitchCase="'player'">
+
+      <ion-item ngClass="select-voice">
+        <ion-label>Select Voice</ion-label>
+        <ion-select [(ngModel)]="selectedVoice">
+          <ion-option *ngFor="let voice of voices" value="{{voice.name}}">{{voice.name}}</ion-option>
+        </ion-select>
+      </ion-item>
+
+      <button ion-button color=special ngClass="playbtn" (click)=playLatest()><ion-icon name="play"></ion-icon></button>
       <h5>{{ currentMessage }}</h5>
     </div>
-  
+
     <ion-list *ngSwitchCase="'latest'">
       <ion-item *ngFor="let message of messages" (click)=setCurrentMessage(message)>
         <ion-thumbnail item-start>
@@ -70,7 +70,7 @@
     <img src="../../assets/images/slackplayer.png" width="60%" />
     <h1>Slack Player</h1>
     <p>Listen to audible Slack conversations in realtime while you're on the go. Login to get started!</p>
-    <button ion-button 
+    <button ion-button
     (click)="auth.login()">
       Log In
     </button>
