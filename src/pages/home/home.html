@@ -43,23 +43,26 @@
         </ion-select>
       </ion-item>
 
-      <button ion-button color=special ngClass="playbtn" (click)=playLatest()><ion-icon name="play"></ion-icon></button>
-      <h5>{{ currentMessage }}</h5>
+      <button ion-button color=special ngClass="playbtn" (click)=getLatestMessage()><ion-icon name="play"></ion-icon></button>
+      <div class="currentMessage">{{ currentMessageFormatted }}</div>
     </div>
 
     <ion-list *ngSwitchCase="'latest'">
-      <ion-item *ngFor="let message of messages" (click)=setCurrentMessage(message)>
-        <ion-thumbnail item-start>
-          <button ion-button><ion-icon name="play"></ion-icon></button>
-        </ion-thumbnail>
-        <h2>{{ message.user_info.user.real_name }} in #{{ message.channel_info.channel.name }}</h2>
-        <p>{{ message.event.event_ts * 1000 | date}}</p>
-      </ion-item>
+      <div *ngFor="let message of messages">
+        <ion-item *ngIf="channelEnabled(message.channel_info.channel.name)" (click)="setCurrentMessage(message)">
+          <ion-thumbnail item-end>
+            <button ion-button><ion-icon name="play"></ion-icon></button>
+          </ion-thumbnail>
+          <h2>{{ message.user_info.user.real_name }} in #{{ message.channel_info.channel.name }}</h2>
+          <p>{{ message.event.event_ts * 1000 | date}}</p>    
+        </ion-item>
+      </div>
     </ion-list>
 
     <ion-list *ngSwitchCase="'channels'">
       <ion-item *ngFor="let channel of channels">
-        <h2>#{{channel.name}}</h2>
+        <ion-label>#{{channel.name}}</ion-label>
+        <ion-toggle (ionChange)="toggleChannel(channel.name, channel.checked)" [(ngModel)]="channel.checked"></ion-toggle>
       </ion-item>
     </ion-list>
   </div>

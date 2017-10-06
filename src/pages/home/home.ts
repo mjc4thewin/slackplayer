@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, AlertController } from 'ionic-angular';
 import { AuthService } from './../../app/auth/auth.service';
 import { AuthHttp } from 'angular2-jwt';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
+import { Observable } from 'rxjs';
 
 declare var responsiveVoice: any;
 
@@ -12,35 +13,51 @@ declare var responsiveVoice: any;
   templateUrl: 'home.html'
 })
 export class HomePage {
- public switcher:any;
- public currentMessage: string;
- public selectedVoice: string;
+ public switcher: string = 'player';
+ public currentMessage: any;
+ public currentMessageFormatted: string;
+ public selectedVoice: string = 'UK English Female';
  public messages: any;
  public channels: any;
+ public enabledChannels: any[] = [];
  public voices: any;
  API_URL = 'http://slackplayer.com/conversation/';
- SLACK_TOKEN = '{YOUR_SLACK_API_TOKEN}';
+ SLACK_TOKEN = '{{YOUR_SLACK_API_KEY}}';
 
-  constructor(public navCtrl: NavController, public auth: AuthService,  public http: Http, public authHttp: AuthHttp) {
+  constructor(public alertCtrl: AlertController, public navCtrl: NavController, public auth: AuthService,  public http: Http, public authHttp: AuthHttp) {
     auth.handleAuthentication();
-    this.switcher = 'player';
+    //turn off polling and find a better solution
+    //setInterval(() => { this.getLatestMessage(); }, 1500);
   }
 
-  ngOnInit() {
+  ionViewDidLoad() {
     this.getChannels();
     this.getMessages();
     this.voices = responsiveVoice.getVoices();
-    this.selectedVoice = 'UK English Female';
+    
   }
 
   public playMessage(): void {
-    responsiveVoice.speak(this.currentMessage, this.selectedVoice);
+    let msg = this.composeMessage(this.currentMessage)
+    this.currentMessageFormatted = msg;
+    responsiveVoice.speak(msg, this.selectedVoice);
+  }
+
+  public presentAlert(title, subtitle) {
+    const alert = this.alertCtrl.create({
+      title: title,
+      subTitle: subtitle,
+      buttons: ['Dismiss']
+    });
+    alert.present();
   }
 
   public setCurrentMessage(msg): void {
-    if (msg.event.text && msg.user_info.user && msg.channel_info) {
+    if (!this.channelEnabled(msg.channel_info.channel.name)) {
+      this.presentAlert("Whoops!", "Either the #" + msg.channel_info.channel.name + " channel is disabled or we couldn't find anything to play =(");
+    } else if (msg.event.text && msg.user_info.user && msg.channel_info) {
       this.switcher = 'player';
-      this.currentMessage = this.composeMessage(msg);
+      this.currentMessage = msg;
       this.playMessage(); 
     }
   }
@@ -54,6 +71,11 @@ export class HomePage {
     
     let messageText = msg.event.text;
     return user + " wrote in the " + channel + " channel: " + messageText;
+  }
+
+  public channelEnabled(channelName) {
+    //TODO:  Need to have this look for a unique ID rather than channel name
+    return this.enabledChannels.findIndex(x => x == channelName) > -1;
   }
 
   public parseMessageText(msgText) {
@@ -73,34 +95,69 @@ export class HomePage {
       }
     } 
 
-    console.log(userArray);
+    if (userArray.length > 0) {
+      let realUserName = this.getUser(userArray[0]);
+      console.log(realUserName);
+    }
 
     //TODO: need to get the user.real_name from the Slack API for each of the users mentioned 
     //in the message and do a search and replace on the @mention with the userId
 
-    return '';
+    return msgText;
   }
 
-  public playLatest(): void {
+  public getLatestMessage(): void {
     if (this.messages) {
-      this.setCurrentMessage(this.messages[0]);
+      if (!this.currentMessage) {
+        this.setCurrentMessage(this.messages[0]);
+      }
+      if ((this.channelEnabled(this.messages[0].channel_info.channel.name)) && (this.messages[0].event_id != this.currentMessage.event_id)) {
+        this.setCurrentMessage(this.messages[0]);
+      }
     }
+    this.getMessages();
   }
 
   public getMessages(): void {
     this.http.get(`${this.API_URL}`)
+    .map(res => res.json())
+    .subscribe(
+      data => this.messages = data.reverse(),
+      error => this.currentMessage = error
+    );
+  }
+
+
+  public toggleChannel(channelName, channelChecked): void {
+    if (channelChecked) {
+      this.enabledChannels.push(channelName);
+    } else {
+      let channelIndex = this.enabledChannels.indexOf(channelName);
+      this.enabledChannels.splice(channelIndex);
+    }
+  }
+
+
+  public getUser(userId) {
+    return this.http.get(`https://slack.com/api/users.info?token=${this.SLACK_TOKEN}&user=${userId}`)
       .map(res => res.json())
       .subscribe(
-        data => this.messages = data.reverse(),
-        error => this.currentMessage = error
+        data => data.user.real_name
       );
-    }
+  }
+
 
   public getChannels(): void {
     this.http.get(`https://slack.com/api/channels.list?token=${this.SLACK_TOKEN}&limit=100`)
     .map(res => res.json())
     .subscribe(
-      data => this.channels = data.channels
+      data => {
+        this.channels = data.channels
+        this.channels.forEach(element => {
+          element.checked = true;
+          this.toggleChannel(element.name, element.checked);
+        });
+      }
     );
   }
 

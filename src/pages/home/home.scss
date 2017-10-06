@@ -12,7 +12,12 @@ page-home {
     }
     .select-voice {
       display: block;
-      margin: 50px auto;
-      width: 40%;
+    }
+    .currentMessage {
+      padding: 15px;
+      background: #f7f7f7;
+      font-size: 18px;
+      line-height: 1.5;
+      margin: 10px 0;
     }
 }

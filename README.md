@@ -40,8 +40,8 @@ ionic serve
 Here are a few suggestions of where we could take this, but I'm open to ideas too.
 
 1) Better message parsing to handle user @ mentions, bot messages, snippets/code blocks and shared links
-2) Channel toggle filters so you can selectively listen by channel
-3) Add ability to specify which voice playback option is used
+2) ~~Channel toggle filters so you can selectively listen by channel~~
+3) ~~Add ability to specify which voice playback option is used~~
 4) Add the ability to dictate a response and have it post back to the channel
 
 
