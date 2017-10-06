@@ -1,3 +1,4 @@
+![Slack Player](http://slackplayer.com/images/slackplayer_720.png?s=300)
 # Slack Player
 
 Listen to audible Slack conversations in realtime while you're on the go.
